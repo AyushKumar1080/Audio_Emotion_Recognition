@@ -1,0 +1,21 @@
+# Basic Libraries
+numpy
+pandas
+
+# Audio Processing
+librosa
+
+# Data Visualization
+matplotlib
+
+# Machine Learning & Deep Learning
+scikit-learn
+tensorflow
+tensorflow_hub
+
+# Backend API
+fastapi
+
+# Frontend
+streamlit
+requests
