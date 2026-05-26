@@ -6,6 +6,15 @@ import librosa
 import numpy as np
 import uvicorn
 import tempfile
+import os
+
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+MODEL_PATH = os.path.join(
+    BASE_DIR,
+    "models",
+    "emotion_model.keras"
+)
 
 app = FastAPI()
 
@@ -18,7 +27,7 @@ app.add_middleware(
 )
 
 # Load trained model
-model = tf.keras.models.load_model(r"../models/emotion_model.keras")
+model = tf.keras.models.load_model(MODEL_PATH)
 
 # Load YAMNet
 yamnet = hub.load("https://tfhub.dev/google/yamnet/1")
