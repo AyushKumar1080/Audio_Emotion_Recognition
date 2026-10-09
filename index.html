@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Audio Emotion Recognition</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+
+    <h1>Audio Emotion Recognition</h1>
+    <p>Upload an audio file to predict the emotion in speech.</p>
+
+    <form id="audioForm">
+        <label for="audioFile">Choose audio file:</label>
+        <input type="file" id="audioFile" accept=".wav" required>
+
+        <button type="submit">Predict Emotion</button>
+    </form>
+
+    <p id="status"></p>
+
+    <div id="result" hidden>
+        <h2>Predicted Emotion</h2>
+        <p id="emotion"></p>
+    </div>
+
+    <script src="/static/script.js"></script>
+</body>
+</html>

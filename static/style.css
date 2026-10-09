@@ -1,0 +1,127 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    min-height: 100vh;
+    text-align: center;
+    padding: 50px 20px;
+    color: #ffffff;
+    background: linear-gradient(135deg, #667eea, #764ba2, #f093fb);
+}
+
+h1 {
+    font-size: 36px;
+    margin-bottom: 15px;
+    color: #ffffff;
+    text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+body > p {
+    font-size: 17px;
+    margin-bottom: 30px;
+    color: #f3e8ff;
+}
+
+form {
+    max-width: 450px;
+    margin: 0 auto 25px;
+    padding: 30px;
+    background: rgba(255, 255, 255, 0.95);
+    color: #312e81;
+    border-radius: 18px;
+    box-shadow: 0 10px 30px rgba(31, 15, 75, 0.25);
+}
+
+label {
+    display: block;
+    margin-bottom: 15px;
+    font-weight: bold;
+    font-size: 16px;
+}
+
+input[type="file"] {
+    width: 100%;
+    margin-bottom: 22px;
+    padding: 12px;
+    background: #f5f3ff;
+    border: 2px dashed #8b5cf6;
+    border-radius: 10px;
+    color: #312e81;
+}
+
+button {
+    width: 100%;
+    padding: 13px 20px;
+    background: linear-gradient(90deg, #6366f1, #a855f7);
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 15px rgba(99, 102, 241, 0.4);
+}
+
+button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+}
+
+#status {
+    margin: 15px auto;
+    color: #ffffff;
+    font-weight: bold;
+    overflow-wrap: anywhere;
+}
+
+#result {
+    max-width: 450px;
+    margin: 25px auto;
+    padding: 25px;
+    color: #312e81;
+    background: linear-gradient(135deg, #ffffff, #ede9fe);
+    border: 2px solid rgba(255, 255, 255, 0.7);
+    border-radius: 18px;
+    box-shadow: 0 10px 25px rgba(31, 15, 75, 0.2);
+}
+
+#result h2 {
+    margin-bottom: 15px;
+    color: #7c3aed;
+}
+
+#emotion {
+    font-size: 26px;
+    font-weight: bold;
+    color: #059669;
+    overflow-wrap: anywhere;
+}
+
+[hidden] {
+    display: none !important;
+}
+
+@media (max-width: 500px) {
+    body {
+        padding: 35px 15px;
+    }
+
+    h1 {
+        font-size: 28px;
+    }
+
+    form,
+    #result {
+        padding: 22px;
+    }
+}
