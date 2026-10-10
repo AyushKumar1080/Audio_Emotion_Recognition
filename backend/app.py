@@ -1,4 +1,4 @@
-import logging
+
 import tempfile
 from pathlib import Path
 
@@ -11,16 +11,14 @@ from fastapi import FastAPI, UploadFile, File, HTTPException
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
-
 # Project paths
 BASE_DIR = Path(__file__).resolve().parent.parent
+
 MODEL_PATH = BASE_DIR / "models" / "emotion_model.keras"
+YAMNET_PATH = BASE_DIR / "models" / "yamnet"
+
 STATIC_DIR = BASE_DIR / "static"
 HTML_PATH = BASE_DIR / "index.html"
-
-STATIC_DIR.mkdir(parents=True, exist_ok=True)
 
 app = FastAPI(title="Audio Emotion Recognition")
 
@@ -30,7 +28,6 @@ app.mount(
     name="static"
 )
 
-# Emotion labels used by the project
 emotion_labels = [
     "neutral",
     "calm",
@@ -44,9 +41,21 @@ emotion_labels = [
 
 MAX_LEN = 66200
 
-# Load models once when the application starts
+# Load the emotion classification model
 model = tf.keras.models.load_model(str(MODEL_PATH))
-yamnet = hub.load("https://tfhub.dev/google/yamnet/1")
+
+# Create the models directory if it does not exist
+YAMNET_PATH.parent.mkdir(parents=True, exist_ok=True)
+
+# Load YAMNet locally, or download and save it if missing
+if (YAMNET_PATH / "saved_model.pb").is_file():
+    yamnet = hub.load(str(YAMNET_PATH))
+else:
+    yamnet = hub.load("https://tfhub.dev/google/yamnet/1")
+    tf.saved_model.save(yamnet, str(YAMNET_PATH))
+
+    # Reload the saved model from disk
+    yamnet = hub.load(str(YAMNET_PATH))
 
 
 @app.get("/", include_in_schema=False)
@@ -66,23 +75,19 @@ async def health():
 
 
 def preprocess_audio(path):
-    # Load audio at 16 kHz
     audio, sr = librosa.load(path, sr=16000)
 
     if len(audio) == 0:
         raise ValueError("The audio file is empty.")
 
-    # Normalize the audio
+    # Normalize audio
     audio = (audio - np.mean(audio)) / (np.std(audio) + 1e-8)
 
     # Pad or trim audio
     if len(audio) > MAX_LEN:
         audio = audio[:MAX_LEN]
     else:
-        audio = np.pad(
-            audio,
-            (0, MAX_LEN - len(audio))
-        )
+        audio = np.pad(audio, (0, MAX_LEN - len(audio)))
 
     # Extract YAMNet embeddings
     waveform = tf.convert_to_tensor(audio, dtype=tf.float32)
@@ -122,11 +127,17 @@ async def predict_emotion(file: UploadFile = File(...)):
                 detail="The uploaded audio file is empty."
             )
 
-        # Prepare features and predict emotion
+        # Extract features and predict
         features = preprocess_audio(str(temp_path))
         predictions = model.predict(features, verbose=0)
 
         predicted_index = int(np.argmax(predictions[0]))
+
+        if predicted_index >= len(emotion_labels):
+            raise ValueError(
+                f"Unexpected prediction index: {predicted_index}"
+            )
+
         confidence = float(np.max(predictions[0]))
 
         return {
@@ -138,11 +149,9 @@ async def predict_emotion(file: UploadFile = File(...)):
         raise
 
     except Exception as exc:
-        logger.exception("Audio emotion prediction failed")
-
         raise HTTPException(
             status_code=500,
-            detail="Failed to process the audio. Check the backend logs."
+            detail=f"Failed to process audio: {type(exc).__name__}: {exc}"
         ) from exc
 
     finally:
