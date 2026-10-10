@@ -11,6 +11,11 @@ from fastapi import FastAPI, UploadFile, File, HTTPException
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 
+import logging
+
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
 # Project paths
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -38,6 +43,13 @@ emotion_labels = [
     "disgust",
     "surprised"
 ]
+
+@app.middleware("http")
+async def log_requests(request, call_next):
+    logger.info("Incoming request: %s %s", request.method, request.url.path)
+    response = await call_next(request)
+    logger.info("Response status: %s", response.status_code)
+    return response
 
 MAX_LEN = 66200
 
